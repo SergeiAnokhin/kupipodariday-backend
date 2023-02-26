@@ -3,16 +3,16 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
-import { Wishlist } from './entities/wishlist.entity';
+import { Wishlists } from './entities/wishlist.entity';
 
 @Injectable()
 export class WishlistsService {
   constructor(
-    @InjectRepository(Wishlist)
-    private wishlistRepository: Repository<Wishlist>,
+    @InjectRepository(Wishlists)
+    private wishlistRepository: Repository<Wishlists>,
   ) {}
 
-  async create(createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+  async create(createWishlistDto: CreateWishlistDto): Promise<Wishlists> {
     const newWishlist = this.wishlistRepository.create({});
 
     return this.wishlistRepository.save(newWishlist);

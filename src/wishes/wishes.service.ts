@@ -3,16 +3,16 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { Wish } from './entities/wish.entity';
+import { Wishes } from './entities/wish.entity';
 
 @Injectable()
 export class WishesService {
   constructor(
-    @InjectRepository(Wish)
-    private wishesRepository: Repository<Wish>,
+    @InjectRepository(Wishes)
+    private wishesRepository: Repository<Wishes>,
   ) {}
 
-  async create(createWishDto: CreateWishDto): Promise<Wish> {
+  async create(createWishDto: CreateWishDto): Promise<Wishes> {
     const newWish = this.wishesRepository.create({});
 
     return this.wishesRepository.save(newWish);
