@@ -1,5 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -8,6 +10,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: 'student',
   password: 'student',
   database: 'kupipodariday',
-  entities: [User],
+  entities: [User, Wish, Wishlist],
   synchronize: true,
 };
