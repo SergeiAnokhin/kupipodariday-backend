@@ -1,9 +1,10 @@
-import { BasicEntity } from 'src/utils/basic.entity';
 import { Entity, Column, OneToMany } from 'typeorm';
 import { IsEmail, Length } from 'class-validator';
+import { BasicEntity } from 'src/utils/basic.entity';
 import { Wishes } from 'src/wishes/entities/wish.entity';
 import { Offers } from 'src/offers/entities/offer.entity';
 import { Wishlists } from 'src/wishlists/entities/wishlist.entity';
+import { Exclude, classToPlain } from 'class-transformer';
 
 @Entity()
 export class Users extends BasicEntity {
@@ -34,6 +35,7 @@ export class Users extends BasicEntity {
   email: string;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @OneToMany(() => Wishes, (wish) => wish.owner)
@@ -44,4 +46,8 @@ export class Users extends BasicEntity {
 
   @OneToMany(() => Wishlists, (wishlist) => wishlist.owner)
   wishlists: Wishlists[];
+
+  toJSON() {
+    return classToPlain(this);
+  }
 }

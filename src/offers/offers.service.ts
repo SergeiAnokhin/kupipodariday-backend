@@ -26,11 +26,11 @@ export class OffersService {
     return `This action returns a #${id} offer`;
   }
 
-  update(id: number, updateOfferDto: UpdateOfferDto) {
+  updateOne(id: number, updateOfferDto: UpdateOfferDto) {
     return `This action updates a #${id} offer`;
   }
 
-  remove(id: number) {
+  removeOne(id: number) {
     return `This action removes a #${id} offer`;
   }
 }

@@ -26,11 +26,11 @@ export class WishesService {
     return `This action returns a #${id} wish`;
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
+  updateOne(id: number, updateWishDto: UpdateWishDto) {
     return `This action updates a #${id} wish`;
   }
 
-  remove(id: number) {
+  removeOne(id: number) {
     return `This action removes a #${id} wish`;
   }
 }

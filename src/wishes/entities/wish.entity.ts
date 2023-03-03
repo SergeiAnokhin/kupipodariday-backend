@@ -1,8 +1,8 @@
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { IsUrl, Length } from 'class-validator';
+import { BasicEntity } from 'src/utils/basic.entity';
 import { Offers } from 'src/offers/entities/offer.entity';
 import { Users } from 'src/users/entities/user.entity';
-import { BasicEntity } from 'src/utils/basic.entity';
-import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class Wishes extends BasicEntity {

@@ -1,7 +1,7 @@
-import { Users } from 'src/users/entities/user.entity';
-import { BasicEntity } from 'src/utils/basic.entity';
-import { Wishes } from 'src/wishes/entities/wish.entity';
 import { Entity, Column, ManyToOne } from 'typeorm';
+import { BasicEntity } from 'src/utils/basic.entity';
+import { Users } from 'src/users/entities/user.entity';
+import { Wishes } from 'src/wishes/entities/wish.entity';
 
 @Entity()
 export class Offers extends BasicEntity {
