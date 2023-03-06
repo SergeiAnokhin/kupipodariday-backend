@@ -1,18 +1,14 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RequestWithUser } from '../types/index';
 import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 
@@ -32,12 +28,10 @@ export class UsersController {
   }
 
   @Patch('me')
-  updateOne(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
-    // return this.usersService.updateOne(req.user.id, updateUserDto);
-  }
-
-  @Delete(':id')
-  removeOne(@Param('id') id: string) {
-    return this.usersService.removeOne(+id);
+  updateOne(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
+    return this.usersService.updateOne(
+      req.headers.authorization,
+      updateUserDto,
+    );
   }
 }

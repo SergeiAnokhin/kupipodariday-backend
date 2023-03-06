@@ -29,7 +29,10 @@ export class AuthService {
   }
 
   async signin(req: RequestWithUser) {
-    const token = await this.tokenService.generateJwtToken(req.user.username);
+    const token = await this.tokenService.generateJwtToken(
+      req.user.username,
+      req.user.id,
+    );
     return {
       access_token: token,
     };

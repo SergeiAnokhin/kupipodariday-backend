@@ -1,15 +1,10 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { hash } from 'bcrypt';
-import { BasicEntity } from 'src/utils/basic.entity';
 import { TokenService } from 'src/token/token.service';
 
 @Injectable()
@@ -47,37 +42,26 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<Users> {
-    return await this.usersRepository.findOne({
+    const user = await this.usersRepository.findOne({
       where: [{ username: username }],
     });
+    delete user.email;
+    return user;
   }
 
-  async findByEmail(email: string): Promise<Users> {
-    return await this.usersRepository.findOne({
-      where: [{ email: email }],
-    });
-  }
+  async updateOne(token: string, updateUserDto: UpdateUserDto) {
+    const { id } = await this.tokenService.getJwtPayload(token.split(' ')[1]);
+    const passwordHash = await hash(updateUserDto.password, 10);
 
-  // updateOne(updateUserDto: UpdateUserDto) {
-  //   return `This action updates user`;
-  // }
-
-  async updateOne(id: number, updateUserDto: UpdateUserDto) {
-    // if (updateUserDto.password) {
-    //   updateUserDto.password = await this.hashServise.hash(
-    //     updateUserDto.password,
-    //   );
-    // }
+    updateUserDto.password = passwordHash;
     await this.usersRepository.update(id, updateUserDto);
 
-    // const updatedUser = await this.findOne({
-    //   where: { id: +id },
-    // });
+    const updatedUser = await this.usersRepository.findOne({
+      where: { id: id },
+    });
 
-    return await this.usersRepository.update(id, updateUserDto);
-  }
+    delete updatedUser.password;
 
-  removeOne(id: number) {
-    return `This action removes a #${id} user`;
+    return updatedUser;
   }
 }

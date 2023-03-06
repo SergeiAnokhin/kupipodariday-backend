@@ -5,8 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async generateJwtToken(username: string) {
-    const payload = { username: username };
+  async generateJwtToken(username: string, id: number) {
+    const payload = { username: username, id: id };
     const token = this.jwtService.sign(payload, {
       secret: 'my_secret_key',
       expiresIn: '1h',
