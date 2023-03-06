@@ -1,10 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { hash } from 'bcrypt';
+import { BasicEntity } from 'src/utils/basic.entity';
 
 @Injectable()
 export class UsersService {
@@ -13,40 +18,54 @@ export class UsersService {
     private usersRepository: Repository<Users>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Users> {
-    const { email, username } = createUserDto;
-
-    const user = await this.usersRepository.find({
-      where: [{ email: email }, { username: username }],
-    });
-
-    if (user.length !== 0) {
-      throw new ConflictException(
-        'Пользователь с таким email или username уже зарегистрирован',
-      );
-    }
-
+  async create(createUserDto: SignupUserDto): Promise<Users> {
     const { password } = createUserDto;
     const passwordHash = await hash(password, 10);
-
     const newUser = this.usersRepository.create({
       ...createUserDto,
       password: passwordHash,
     });
-
     return await this.usersRepository.save(newUser);
   }
 
-  async findAll() {
-    return await this.usersRepository.find();
+  async findByEmailOrUsername(
+    email: string,
+    username: string,
+  ): Promise<Users[]> {
+    return this.usersRepository.find({
+      where: [{ email: email }, { username: username }],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findByUsername(username: string): Promise<Users> {
+    return await this.usersRepository.findOne({
+      where: [{ username: username }],
+    });
   }
 
-  updateOne(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByEmail(email: string): Promise<Users> {
+    return await this.usersRepository.findOne({
+      where: [{ email: email }],
+    });
+  }
+
+  // updateOne(updateUserDto: UpdateUserDto) {
+  //   return `This action updates user`;
+  // }
+
+  async updateOne(id: number, updateUserDto: UpdateUserDto) {
+    // if (updateUserDto.password) {
+    //   updateUserDto.password = await this.hashServise.hash(
+    //     updateUserDto.password,
+    //   );
+    // }
+    await this.usersRepository.update(id, updateUserDto);
+
+    // const updatedUser = await this.findOne({
+    //   where: { id: +id },
+    // });
+
+    return await this.usersRepository.update(id, updateUserDto);
   }
 
   removeOne(id: number) {

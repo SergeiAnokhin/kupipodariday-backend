@@ -6,6 +6,8 @@ import { typeOrmConfig } from 'src/config/typeorm.config';
 import { WishesModule } from 'src/wishes/wishes.module';
 import { WishlistsModule } from 'src/wishlists/wishlists.module';
 import { OffersModule } from 'src/offers/offers.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { TokenModule } from 'src/token/token.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { OffersModule } from 'src/offers/offers.module';
     WishesModule,
     WishlistsModule,
     OffersModule,
+    AuthModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [],

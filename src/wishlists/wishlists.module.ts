@@ -8,5 +8,6 @@ import { Wishlists } from './entities/wishlist.entity';
   imports: [TypeOrmModule.forFeature([Wishlists])],
   controllers: [WishlistsController],
   providers: [WishlistsService],
+  exports: [WishlistsService],
 })
 export class WishlistsModule {}
