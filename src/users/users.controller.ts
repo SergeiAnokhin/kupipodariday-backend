@@ -14,20 +14,16 @@ import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RequestWithUser } from '../types/index';
 import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() signupUserDto: SignupUserDto) {
-    return this.usersService.create(signupUserDto);
-  }
-
-  @UseGuards(JwtGuard)
   @Get('me')
-  getUser() {
-    return 'true1';
+  getUser(@Req() req: Request) {
+    return this.usersService.findCurrentUser(req.headers.authorization);
   }
 
   @Get(':username')

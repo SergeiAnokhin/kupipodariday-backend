@@ -1,18 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { SignupUserDto } from 'src/users/dto/signup-user.dto';
-import { SigninUserDto } from 'src/users/dto/signin-user.dto';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local-auth.guard';
+import { RequestWithUser } from 'src/types';
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +10,8 @@ export class AuthController {
 
   @UseGuards(LocalGuard)
   @Post('signin')
-  async signin(@Body() signinUserDto: SigninUserDto) {
-    return await this.authService.signin(signinUserDto);
+  async signin(@Req() req: RequestWithUser) {
+    return await this.authService.signin(req);
   }
 
   @Post('signup')

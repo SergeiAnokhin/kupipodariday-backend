@@ -13,4 +13,8 @@ export class TokenService {
     });
     return token;
   }
+
+  async getJwtPayload(token: string) {
+    return this.jwtService.verify(token, { secret: 'my_secret_key' });
+  }
 }

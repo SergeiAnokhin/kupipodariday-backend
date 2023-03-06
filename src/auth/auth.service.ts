@@ -1,11 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Users } from 'src/users/entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { SignupUserDto } from 'src/users/dto/signup-user.dto';
 import { HashService } from 'src/hash/hash.service';
-import { SigninUserDto } from 'src/users/dto/signin-user.dto';
 import { TokenService } from 'src/token/token.service';
+import { RequestWithUser } from 'src/types';
 
 @Injectable()
 export class AuthService {
@@ -29,10 +28,8 @@ export class AuthService {
     return this.usersService.create(signupUserDto);
   }
 
-  async signin(signinUserDto: SigninUserDto) {
-    const token = await this.tokenService.generateJwtToken(
-      signinUserDto.username,
-    );
+  async signin(req: RequestWithUser) {
+    const token = await this.tokenService.generateJwtToken(req.user.username);
     return {
       access_token: token,
     };
@@ -49,6 +46,6 @@ export class AuthService {
 
       return isValidHash ? user : null;
     }
-    return user;
+    return null;
   }
 }

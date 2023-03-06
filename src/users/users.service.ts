@@ -10,12 +10,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Users } from './entities/user.entity';
 import { hash } from 'bcrypt';
 import { BasicEntity } from 'src/utils/basic.entity';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    private tokenService: TokenService,
   ) {}
 
   async create(createUserDto: SignupUserDto): Promise<Users> {
@@ -26,6 +28,13 @@ export class UsersService {
       password: passwordHash,
     });
     return await this.usersRepository.save(newUser);
+  }
+
+  async findCurrentUser(token: string) {
+    const { username } = await this.tokenService.getJwtPayload(
+      token.split(' ')[1],
+    );
+    return this.findByUsername(username);
   }
 
   async findByEmailOrUsername(
