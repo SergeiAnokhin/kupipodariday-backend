@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignupUserDto } from './dto/signup-user.dto';
@@ -45,7 +45,11 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: [{ username: username }],
     });
-    delete user.email;
+    if (user) {
+      delete user.email;
+    } else {
+      throw new NotFoundException('Пользователь не найден');
+    }
     return user;
   }
 
