@@ -1,25 +1,13 @@
+import { Entity, Column, OneToMany } from 'typeorm';
 import { IsEmail, Length } from 'class-validator';
-
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Column,
-  OneToMany,
-} from 'typeorm';
+import { BasicEntity } from 'src/utils/basic.entity';
+import { Wishes } from 'src/wishes/entities/wish.entity';
+import { Offers } from 'src/offers/entities/offer.entity';
+import { Wishlists } from 'src/wishlists/entities/wishlist.entity';
+import { Exclude, classToPlain } from 'class-transformer';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
+export class Users extends BasicEntity {
   @Column({
     type: 'varchar',
     unique: true,
@@ -47,14 +35,19 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
-  //   @OneToMany(() => Wish, (wish) => wish.owner)
-  //   wishes: Wish[];
+  @OneToMany(() => Wishes, (wish) => wish.owner)
+  wishes: Wishes[];
 
-  //   @OneToMany(() => Offer, (offer) => offer.user)
-  //   offers: Offer[];
+  @OneToMany(() => Offers, (offer) => offer.user)
+  offers: Offers[];
 
-  //   @OneToMany(() => WishList, (wishlist) => wishlist.owner)
-  //   wishlists: WishList[];
+  @OneToMany(() => Wishlists, (wishlist) => wishlist.owner)
+  wishlists: Wishlists[];
+
+  toJSON() {
+    return classToPlain(this);
+  }
 }

@@ -1,26 +1,67 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Users } from './entities/user.entity';
+import { hash } from 'bcrypt';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
+    private tokenService: TokenService,
+  ) {}
+
+  async create(createUserDto: SignupUserDto): Promise<Users> {
+    const { password } = createUserDto;
+    const passwordHash = await hash(password, 10);
+    const newUser = this.usersRepository.create({
+      ...createUserDto,
+      password: passwordHash,
+    });
+    return await this.usersRepository.save(newUser);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findCurrentUser(token: string) {
+    const { username } = await this.tokenService.getJwtPayload(
+      token.split(' ')[1],
+    );
+    return this.findByUsername(username);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findByEmailOrUsername(
+    email: string,
+    username: string,
+  ): Promise<Users[]> {
+    return this.usersRepository.find({
+      where: [{ email: email }, { username: username }],
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByUsername(username: string): Promise<Users> {
+    const user = await this.usersRepository.findOne({
+      where: [{ username: username }],
+    });
+    delete user.email;
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async updateOne(token: string, updateUserDto: UpdateUserDto) {
+    const { id } = await this.tokenService.getJwtPayload(token.split(' ')[1]);
+    const passwordHash = await hash(updateUserDto.password, 10);
+
+    updateUserDto.password = passwordHash;
+    await this.usersRepository.update(id, updateUserDto);
+
+    const updatedUser = await this.usersRepository.findOne({
+      where: { id: id },
+    });
+
+    delete updatedUser.password;
+
+    return updatedUser;
   }
 }
