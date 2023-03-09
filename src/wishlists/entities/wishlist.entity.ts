@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
-import { Length } from 'class-validator';
+import { IsOptional, Length } from 'class-validator';
 import { BasicEntity } from 'src/utils/basic.entity';
 import { Users } from 'src/users/entities/user.entity';
 import { Wishes } from 'src/wishes/entities/wish.entity';
@@ -14,8 +14,9 @@ export class Wishlists extends BasicEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
+    length: 1500,
   })
-  @Length(1, 1500)
   description: string;
 
   @Column()
@@ -26,5 +27,6 @@ export class Wishlists extends BasicEntity {
 
   @ManyToMany(() => Wishes)
   @JoinTable()
+  @IsOptional()
   items: Wishes[];
 }

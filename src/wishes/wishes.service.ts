@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -16,6 +16,16 @@ export class WishesService {
     @InjectRepository(Wishes)
     private wishesRepository: Repository<Wishes>,
   ) {}
+
+  findMany(query: FindManyOptions<Wishes>) {
+    return this.wishesRepository.find(query);
+  }
+
+  async findManyByIdArr(idArr: number[]): Promise<Wishes[]> {
+    return this.wishesRepository.find({
+      where: { id: In(idArr) },
+    });
+  }
 
   async create(user: Users, createWishDto: CreateWishDto) {
     delete user.password;
@@ -178,8 +188,6 @@ export class WishesService {
         ...wish,
         copied: wish.copied + 1,
       };
-
-      console.log(updatedWish);
 
       await this.updateWishById(
         updatedWish,
