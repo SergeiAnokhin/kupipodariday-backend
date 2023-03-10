@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { FindManyOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { Offers } from './entities/offer.entity';
 import { Users } from 'src/users/entities/user.entity';
 import { WishesService } from 'src/wishes/wishes.service';

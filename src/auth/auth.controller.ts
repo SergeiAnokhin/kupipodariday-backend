@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local-auth.guard';
 import { RequestWithUser } from 'src/types';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

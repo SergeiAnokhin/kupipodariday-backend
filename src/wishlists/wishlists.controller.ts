@@ -16,7 +16,7 @@ import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestWithUser } from 'src/types';
 import { Wishlists } from './entities/wishlist.entity';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
