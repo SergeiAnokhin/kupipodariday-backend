@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -46,39 +45,6 @@ export class WishlistsService {
 
     return this.wishlistsRepository.save(newWishList);
   }
-
-  // async updateWishlist(
-  //   updateWishlistDto: UpdateWishlistDto,
-  //   id: string,
-  //   userId: number,
-  // ) {
-  //   const wishList = await this.findOne({
-  //     where: { id: +id },
-  //     relations: {
-  //       owner: true,
-  //       items: true,
-  //     },
-  //   });
-
-  //   if (wishList.owner.id !== userId) {
-  //     throw new ForbiddenException('Нельзя редактировать чужие подборки');
-  //   }
-
-  //   console.log(updateWishlistDto);
-
-  //   await this.wishlistsRepository.update(id, updateWishlistDto);
-  //   const updatedWishlist = await this.findOne({
-  //     where: { id: +id },
-  //     relations: {
-  //       owner: true,
-  //       items: true,
-  //     },
-  //   });
-
-  //   delete updatedWishlist.owner.password;
-  //   delete updatedWishlist.owner.email;
-  //   return updatedWishlist;
-  // }
 
   async updateWishlist(
     id: number,

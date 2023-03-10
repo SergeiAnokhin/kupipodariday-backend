@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -34,70 +35,38 @@ export class WishesService {
       ...createWishDto,
       owner: user,
     });
-    return this.wishesRepository.save(newWish);
+    await this.wishesRepository.save(newWish);
+    return {};
   }
 
-  async getLastWish() {
-    const wishes = await this.wishesRepository.find({
-      relations: {
-        owner: true,
-        offers: {
-          item: true,
-        },
-      },
-      order: {
-        createdAt: 'DESC',
-      },
+  async getLastWishes(): Promise<Wishes[]> {
+    return await this.wishesRepository.find({
       take: 40,
+      order: { createdAt: 'desc' },
+      relations: [
+        'owner',
+        'offers',
+        'offers.user',
+        'offers.user.wishes',
+        'offers.user.offers',
+        'offers.user.wishlists',
+      ],
     });
-
-    wishes.forEach((wish) => {
-      const amounts = wish.offers.map((offer) => Number(offer.amount));
-
-      wish.raised = amounts.reduce(function (acc, val) {
-        return acc + val;
-      }, 0);
-
-      delete wish.owner.password;
-      delete wish.owner.email;
-    });
-
-    return wishes;
   }
 
-  async getTopWish() {
-    const wishes = await this.wishesRepository.find({
-      relations: {
-        owner: true,
-        offers: {
-          item: true,
-        },
-      },
-      order: {
-        copied: 'DESC',
-      },
-      take: 10,
+  async getTopWishes(): Promise<Wishes[]> {
+    return await this.wishesRepository.find({
+      take: 20,
+      order: { copied: 'desc' },
+      relations: [
+        'owner',
+        'offers',
+        'offers.user',
+        'offers.user.wishes',
+        'offers.user.offers',
+        'offers.user.wishlists',
+      ],
     });
-
-    const copiedWishes = wishes.filter((wish) => {
-      if (wish.copied === 0) {
-        return;
-      }
-      return wish;
-    });
-
-    copiedWishes.forEach((wish) => {
-      const amounts = wish.offers.map((offer) => Number(offer.amount));
-
-      wish.raised = amounts.reduce(function (acc, val) {
-        return acc + val;
-      }, 0);
-
-      delete wish.owner.password;
-      delete wish.owner.email;
-    });
-
-    return copiedWishes;
   }
 
   async getWishById(id: number) {
@@ -152,10 +121,39 @@ export class WishesService {
     }
 
     await this.wishesRepository.update(id, updateWishDto);
+    return {};
   }
 
-  async removeWishById(id: number) {
-    return this.wishesRepository.delete({ id });
+  async removeWishById(id: number, userId: number) {
+    const wish = await this.wishesRepository.findOne({
+      where: { id },
+      relations: [
+        'owner',
+        'offers',
+        'offers.user',
+        'offers.user.wishes',
+        'offers.user.offers',
+        'offers.user.wishlists',
+      ],
+    });
+
+    if (wish.offers.length !== 0) {
+      throw new BadRequestException(
+        'Нельзя удалять подарок, на который кто-то подписан',
+      );
+    }
+
+    if (!wish) {
+      throw new NotFoundException('Подарок не найден');
+    }
+
+    if (wish.owner.id !== userId) {
+      throw new BadRequestException('Нельзя удалть чужие подарки');
+    }
+
+    await this.wishesRepository.delete(id);
+
+    return wish;
   }
 
   async findOne(query: FindOneOptions<Wishes>): Promise<Wishes> {

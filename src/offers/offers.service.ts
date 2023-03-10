@@ -82,7 +82,7 @@ export class OffersService {
     return sum;
   }
 
-  findMany(query: FindManyOptions<Offers>) {
+  async findMany(query: FindManyOptions<Offers>) {
     return this.offersRepository.find(query);
   }
 
@@ -127,13 +127,5 @@ export class OffersService {
     offer.item.price = Number(offer.item.price);
 
     return offer;
-  }
-
-  updateOne(id: number, updateOfferDto: UpdateOfferDto) {
-    return `This action updates a #${id} offer`;
-  }
-
-  removeOne(id: number) {
-    return `This action removes a #${id} offer`;
   }
 }

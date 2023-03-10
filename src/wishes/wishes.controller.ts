@@ -27,12 +27,12 @@ export class WishesController {
 
   @Get('last')
   getLastWish() {
-    return this.wishesService.getLastWish();
+    return this.wishesService.getLastWishes();
   }
 
   @Get('top')
   getTopWish() {
-    return this.wishesService.getTopWish();
+    return this.wishesService.getTopWishes();
   }
 
   @Get(':id')
@@ -50,8 +50,8 @@ export class WishesController {
   }
 
   @Delete(':id')
-  removeWish(@Param('id') id: string) {
-    return this.wishesService.removeWishById(+id);
+  removeWish(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.wishesService.removeWishById(+id, req.user.id);
   }
 
   @Post(':id/copy')
