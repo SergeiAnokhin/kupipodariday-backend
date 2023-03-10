@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +14,10 @@ export class UsersService {
     private usersRepository: Repository<Users>,
     private tokenService: TokenService,
   ) {}
+
+  async findOne(query: FindOneOptions<Users>): Promise<Users> {
+    return this.usersRepository.findOne(query);
+  }
 
   async create(createUserDto: SignupUserDto): Promise<Users> {
     const { password } = createUserDto;
@@ -45,7 +49,13 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: [{ username: username }],
     });
-    delete user.email;
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<Users> {
+    const user = await this.usersRepository.findOne({
+      where: [{ email: email }],
+    });
     return user;
   }
 
@@ -63,5 +73,32 @@ export class UsersService {
     delete updatedUser.password;
 
     return updatedUser;
+  }
+
+  async getUserWishes(id: number) {
+    const currentUser = await this.findOne({
+      where: { id: id },
+      relations: {
+        wishes: {
+          owner: true,
+          offers: {
+            item: { owner: true, offers: true },
+            user: { wishes: true, offers: true, wishlists: true },
+          },
+        },
+      },
+    });
+
+    const currentUserWishes = currentUser.wishes.filter((wish) => {
+      const amounts = wish.offers.map((offer) => Number(offer.amount));
+      delete wish.owner.email;
+      wish.raised = amounts.reduce(function (acc, val) {
+        return acc + val;
+      }, 0);
+      wish.price = Number(wish.price);
+      return wish;
+    });
+
+    return currentUserWishes;
   }
 }
